@@ -2,6 +2,8 @@ package com.colisa.notekeeper;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -15,6 +17,11 @@ import java.util.List;
 public class NoteActivity extends AppCompatActivity {
 
     public static final int POSITION_NOT_SET = -1;
+
+    public static final String ORIGINAL_NOTE_COURSE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_COURSE_ID";
+    public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
+    public static final String ORIGINAL_NOTE_TEXT_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TEXT_ID";
+
     private NoteInfo mNote;
     private boolean mIsNewNote;
     private Spinner mSpinnerCourses;
@@ -45,7 +52,12 @@ public class NoteActivity extends AppCompatActivity {
         mSpinnerCourses.setAdapter(mAdapterCourses);
 
         readDisplayStateValues();
-        saveOriginalNoteValues();
+        if (null == savedInstanceState) {
+            saveOriginalNoteValues();
+        } else {
+            restoreOriginalNoteValues(savedInstanceState);
+        }
+        
 
         mTextNoteTitle = findViewById(R.id.text_note_title);
         mTextNoteText = findViewById(R.id.text_note_text);
@@ -54,6 +66,12 @@ public class NoteActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private void restoreOriginalNoteValues(Bundle savedInstanceState) {
+        mOriginalCourseId = savedInstanceState.getString(ORIGINAL_NOTE_COURSE_ID);
+        mOriginalNoteTitle = savedInstanceState.getString(ORIGINAL_NOTE_TITLE_ID);
+        mOriginalNoteText = savedInstanceState.getString(ORIGINAL_NOTE_TEXT_ID);
     }
 
     private void saveOriginalNoteValues() {
@@ -157,4 +175,15 @@ public class NoteActivity extends AppCompatActivity {
         mNote.setTitle(mTextNoteTitle.getText().toString());
         mNote.setText(mTextNoteText.getText().toString());
     }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ORIGINAL_NOTE_COURSE_ID, mOriginalCourseId);
+        outState.putString(ORIGINAL_NOTE_TEXT_ID, mOriginalNoteText);
+        outState.putString(ORIGINAL_NOTE_TITLE_ID, mOriginalNoteTitle);
+    }
+
+
 }
