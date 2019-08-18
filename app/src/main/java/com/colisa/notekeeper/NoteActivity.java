@@ -6,6 +6,7 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -16,8 +17,8 @@ import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
 
+    private static final String TAG = NoteListActivity.class.getSimpleName();
     public static final int POSITION_NOT_SET = -1;
-
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
     public static final String ORIGINAL_NOTE_TEXT_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TEXT_ID";
@@ -65,7 +66,7 @@ public class NoteActivity extends AppCompatActivity {
             displayNote(mSpinnerCourses, mTextNoteTitle, mTextNoteText);
         }
 
-
+        Log.d(TAG, "onCreate");
     }
 
     private void restoreOriginalNoteValues(Bundle savedInstanceState) {
@@ -97,7 +98,7 @@ public class NoteActivity extends AppCompatActivity {
         if (mIsNewNote) {
             createNewNote();
         }
-
+        Log.i(TAG, "mNotePosition: " + mNotePosition);
         mNote = DataManager.getInstance().getNotes().get(mNotePosition);
 
     }
@@ -151,6 +152,7 @@ public class NoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (mIsCancelling) {
+            Log.i(TAG, "Cancelling note at position: " + mNotePosition);
             if (mIsNewNote) {
                 DataManager.getInstance().removeNote(mNotePosition);
             } else {
@@ -160,6 +162,7 @@ public class NoteActivity extends AppCompatActivity {
         } else {
             saveNote();
         }
+        Log.d(TAG, "onPause");
     }
 
     private void storePreviousNoteValues() {
