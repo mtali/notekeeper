@@ -22,10 +22,9 @@ public class DataManagerTest {
         // We just created a note
         // We need to confirm our new created note is on data manager
         NoteInfo compareNote = dm.getNotes().get(noteIndex);
-        assertEquals(newNote.getCourse(), compareNote.getCourse());
-        assertEquals(newNote.getTitle(), compareNote.getTitle());
-        assertEquals(newNote.getText(), compareNote.getText());
-
+        assertEquals(compareNote.getCourse(), newNote.getCourse());
+        assertEquals(compareNote.getTitle(), newNote.getTitle());
+        assertEquals(compareNote.getText(), newNote.getText());
 
     }
 }
