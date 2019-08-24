@@ -2,8 +2,6 @@ package com.colisa.notekeeper;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -59,7 +57,7 @@ public class NoteActivity extends AppCompatActivity {
         } else {
             restoreOriginalNoteValues(savedInstanceState);
         }
-        
+
 
         mTextNoteTitle = findViewById(R.id.text_note_title);
         mTextNoteText = findViewById(R.id.text_note_text);
