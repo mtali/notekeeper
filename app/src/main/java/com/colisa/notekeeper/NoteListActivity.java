@@ -16,7 +16,8 @@ import java.util.List;
 
 public class NoteListActivity extends AppCompatActivity {
     public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_POSITION";
-//    private ArrayAdapter<NoteInfo> mAdapterNotes;
+    private NoteRecyclerAdapter mNoteRecyclerAdapter;
+    //    private ArrayAdapter<NoteInfo> mAdapterNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +58,13 @@ public class NoteListActivity extends AppCompatActivity {
         final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(notesLayoutManager);
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        final NoteRecyclerAdapter noteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
-        recyclerView.setAdapter(noteRecyclerAdapter);
+        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
+        recyclerView.setAdapter(mNoteRecyclerAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        mAdapterNotes.notifyDataSetChanged();
+        mNoteRecyclerAdapter.notifyDataSetChanged();
     }
 }

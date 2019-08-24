@@ -1,6 +1,7 @@
 package com.colisa.notekeeper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     private final Context mContext;
     private final LayoutInflater mInflater;
     private final List<NoteInfo> mNotes;
+    public int mCurrentPosition;
 
     public NoteRecyclerAdapter(Context context, List<NoteInfo> notes) {
         mContext = context;
@@ -34,6 +36,7 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         NoteInfo note = mNotes.get(i);
         viewHolder.mTextCourse.setText(note.getCourse().getTitle());
         viewHolder.mTextTitle.setText(note.getTitle());
+        viewHolder.mCurrentPosition = viewHolder.getAdapterPosition();
     }
 
     @Override
@@ -41,15 +44,24 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         return mNotes.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public  class ViewHolder extends RecyclerView.ViewHolder {
 
         public final TextView mTextCourse;
         public final TextView mTextTitle;
+        public int mCurrentPosition;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mTextCourse = itemView.findViewById(R.id.text_course);
             mTextTitle = itemView.findViewById(R.id.text_title);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, NoteActivity.class);
+                    intent.putExtra(NoteActivity.NOTE_POSITION, mCurrentPosition);
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 

@@ -22,6 +22,7 @@ public class NoteActivity extends AppCompatActivity {
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
     public static final String ORIGINAL_NOTE_TEXT_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TEXT_ID";
+    public static final String NOTE_POSITION = "con.colisa.notekeeper.NOTE_POSITION";
 
     private NoteInfo mNote;
     private boolean mIsNewNote;
@@ -93,7 +94,7 @@ public class NoteActivity extends AppCompatActivity {
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        mNotePosition = intent.getIntExtra(NoteListActivity.NOTE_POSITION, POSITION_NOT_SET);
+        mNotePosition = intent.getIntExtra(NoteActivity.NOTE_POSITION, POSITION_NOT_SET);
         mIsNewNote = (mNotePosition == POSITION_NOT_SET);
         if (mIsNewNote) {
             createNewNote();
