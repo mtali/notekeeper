@@ -8,7 +8,11 @@
         android:title="Send as email"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_cancel"
+        android:id="@+id/action_next"
         android:orderInCategory="101"
+        android:title="Next" />
+    <item
+        android:id="@+id/action_cancel"
+        android:orderInCategory="102"
         android:title="Cancel" />
 </menu>
