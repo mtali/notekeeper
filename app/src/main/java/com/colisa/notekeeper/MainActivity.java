@@ -90,10 +90,15 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         selectNavigationItem(R.id.nav_notes);
     }
 
-    private void selectNavigationItem(int id) {
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        Menu menu = navigationView.getMenu();
-        menu.findItem(id).setChecked(true);
+    private void selectNavigationItem(final int id) {
+        final NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.post(new Runnable() {
+            @Override
+            public void run() {
+                navigationView.getMenu().findItem(id)
+                        .setChecked(true);
+            }
+        });
     }
 
     private void displayCourse() {
