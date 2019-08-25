@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -120,6 +121,18 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        return false;
+        final int id = menuItem.getItemId();
+        if (id == R.id.nav_courses) {
+
+        } else if (id == R.id.nav_notes) {
+
+        } else if (id == R.id.nav_send) {
+
+        } else if (id == R.id.nav_share) {
+
+        }
+        DrawerLayout layout = findViewById(R.id.drawer_layout);
+        layout.closeDrawer(Gravity.START);
+        return true;
     }
 }
