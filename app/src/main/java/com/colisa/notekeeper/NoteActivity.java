@@ -15,7 +15,7 @@ import java.util.List;
 
 public class NoteActivity extends AppCompatActivity {
 
-    private static final String TAG = NoteListActivity.class.getSimpleName();
+    private static final String TAG = NoteActivity.class.getSimpleName();
     public static final int POSITION_NOT_SET = -1;
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
@@ -112,7 +112,7 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_note, menu);
         return true;
     }
 
