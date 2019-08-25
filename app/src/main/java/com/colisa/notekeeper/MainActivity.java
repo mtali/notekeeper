@@ -4,22 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import androidx.navigation.ui.AppBarConfiguration;
-
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 
 import java.util.List;
 
@@ -29,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_POSITION";
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
+    private RecyclerView mRecyclerItems;
+    private LinearLayoutManager mNotesLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +67,23 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         initializeDisplayContent();
     }
 
+    private void initializeDisplayContent() {
+        mRecyclerItems = findViewById(R.id.list_items);
+        mNotesLayoutManager = new LinearLayoutManager(this);
+
+        List<NoteInfo> notes = DataManager.getInstance().getNotes();
+        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
+        displayNotes();
+    }
+
+    private void displayNotes() {
+        mRecyclerItems.setLayoutManager(mNotesLayoutManager);
+        mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        Menu menu = navigationView.getMenu();
+        menu.findItem(R.id.nav_notes).setChecked(true);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -82,15 +98,6 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         } else {
             super.onBackPressed();
         }
-    }
-
-    private void initializeDisplayContent() {
-        final RecyclerView recyclerView = findViewById(R.id.recycler_notes_list_view);
-        final LinearLayoutManager notesLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(notesLayoutManager);
-        List<NoteInfo> notes = DataManager.getInstance().getNotes();
-        mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
-        recyclerView.setAdapter(mNoteRecyclerAdapter);
     }
 
     @Override
@@ -125,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         if (id == R.id.nav_courses) {
 
         } else if (id == R.id.nav_notes) {
-
+            displayNotes();
         } else if (id == R.id.nav_send) {
 
         } else if (id == R.id.nav_share) {
