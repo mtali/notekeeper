@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -73,7 +74,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private void initializeDisplayContent() {
         mRecyclerItems = findViewById(R.id.list_items);
         mNotesLayoutManager = new LinearLayoutManager(this);
-        mCoursesLayoutManager = new GridLayoutManager(this, 2);
+        mCoursesLayoutManager = new GridLayoutManager(this,
+                getResources().getInteger(R.integer.course_grid_span));
 
         List<NoteInfo> notes = DataManager.getInstance().getNotes();
         mNoteRecyclerAdapter = new NoteRecyclerAdapter(this, notes);
@@ -157,12 +159,17 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         } else if (id == R.id.nav_notes) {
             displayNotes();
         } else if (id == R.id.nav_send) {
-
+            handleSelection(R.string.nav_share_message);
         } else if (id == R.id.nav_share) {
-
+            handleSelection(R.string.nav_send_message);
         }
         DrawerLayout layout = findViewById(R.id.drawer_layout);
         layout.closeDrawer(Gravity.START);
         return true;
+    }
+
+    private void handleSelection(int messageId) {
+        View view = findViewById(R.id.list_items);
+        Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show();
     }
 }
