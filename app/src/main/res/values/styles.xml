@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+<!--        <item name="editTextStyle">@style/WeirdEditText</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -25,6 +26,12 @@
     <style name="AddFab" parent="@style/Widget.Design.FloatingActionButton">
         <item name="srcCompat">@drawable/ic_add_circle_black_24dp</item>
         <item name="android:tint">@android:color/white</item>
+    </style>
+
+    <!--Apply only for editTextStyle-->
+    <style name="WeirdEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@android:color/holo_green_dark</item>
+        <item name="android:textColorHint">@android:color/holo_red_dark</item>
     </style>
 
 </resources>
