@@ -1,12 +1,14 @@
 package com.colisa.notekeeper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.core.content.SharedPreferencesCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -20,6 +22,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.navigation.ui.AppBarConfiguration;
 
@@ -144,6 +147,21 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     protected void onResume() {
         super.onResume();
         mNoteRecyclerAdapter.notifyDataSetChanged();
+        updateNavigationHeader();
+    }
+
+    private void updateNavigationHeader() {
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        View headerView = navigationView.getHeaderView(0);
+        TextView textUserName = headerView.findViewById(R.id.text_user_name);
+        TextView textEmail = headerView.findViewById(R.id.text_email_address);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        String userName = pref.getString(getString(R.string.pref_key_user_display_name), "");
+        String email = pref.getString(getString(R.string.pref_key_email_address), "");
+
+        textEmail.setText(email);
+        textUserName.setText(userName);
     }
 
     @Override
