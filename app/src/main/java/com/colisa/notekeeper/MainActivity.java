@@ -194,11 +194,19 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         } else if (id == R.id.nav_send) {
             handleSelection(R.string.nav_share_message);
         } else if (id == R.id.nav_share) {
-            handleSelection(R.string.nav_send_message);
+            handleShare();
         }
         DrawerLayout layout = findViewById(R.id.drawer_layout);
         layout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void handleShare() {
+        View view = findViewById(R.id.list_items);
+        String social = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                getString(R.string.pref_key_list_social), ""
+        );
+        Snackbar.make(view, "Share to - " + social, Snackbar.LENGTH_SHORT).show();
     }
 
     private void handleSelection(int messageId) {

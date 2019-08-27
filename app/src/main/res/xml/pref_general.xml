@@ -21,7 +21,7 @@
     <ListPreference
         android:entries="@array/pref_entries_favourite_social"
         android:entryValues="@array/pref_values_favourite_social"
-        android:key="list_social_media_preference"
+        android:key="@string/pref_key_list_social"
         android:title="Favourite social network"
 
         app:defaultValue="@string/pref_default_favourite_social"
