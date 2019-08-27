@@ -1,13 +1,18 @@
 package com.colisa.notekeeper;
 
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -92,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
+            setPreferencesFromResource(R.xml.pref_root, rootKey);
             Log.i(TAG, "SettingsFragment.onCreatePreferences called");
         }
     }
@@ -103,7 +108,38 @@ public class SettingsActivity extends AppCompatActivity implements PreferenceFra
     public static class GeneralPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.general_preferences, rootKey);
+            setPreferencesFromResource(R.xml.pref_general, rootKey);
+
+            EditTextPreference emailPreference = findPreference(getString(R.string.pref_key_email_address));
+            if (null != emailPreference){
+                emailPreference.setOnBindEditTextListener(new EditTextPreference.OnBindEditTextListener() {
+                    @Override
+                    public void onBindEditText(@NonNull EditText editText) {
+                        editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                    }
+                });
+                emailPreference.setSummaryProvider(new Preference.SummaryProvider() {
+                    @Override
+                    public CharSequence provideSummary(Preference preference) {
+                        String text = ((EditTextPreference) preference).getText();
+                        if (TextUtils.isEmpty(text)) {
+                            return "Not set";
+                        }
+                        return text;
+                    }
+                });
+            }
+
+
+//            EditTextPreference displayNamePreference = findPreference("user_display_name");
+//            if (null != displayNamePreference) {
+//                displayNamePreference.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+//            }
+//
+//            ListPreference socialListPreference = findPreference("list_social_media_preference");
+//            if (null != socialListPreference) {
+//                socialListPreference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+//            }
             Log.i(TAG, "SettingsFragment.onCreatePreferences called");
         }
     }

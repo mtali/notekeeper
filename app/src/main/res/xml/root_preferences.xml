@@ -1,9 +1,0 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <Preference
-        app:title="@string/general_preferences_title"
-        android:summary="Sample"
-        android:fragment="com.colisa.notekeeper.SettingsActivity$GeneralPreferenceFragment"/>
-
-</PreferenceScreen>
