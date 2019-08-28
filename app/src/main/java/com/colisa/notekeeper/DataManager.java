@@ -42,16 +42,17 @@ public class DataManager {
                 null,
                 null,
                 null,
-                null);
+                CourseInfoEntry.COLUMN_COURSE_TITLE + " DESC");
         loadCoursesFromDatabase(courseCursor);
-
+        final String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
         final Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME,
                 noteColumns,
                 null,
                 null,
                 null,
                 null,
-                null);
+                noteOrderBy
+                );
         loadNotesFromDatabase(noteCursor);
     }
 
