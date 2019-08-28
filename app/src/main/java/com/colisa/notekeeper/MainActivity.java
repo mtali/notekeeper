@@ -2,6 +2,7 @@ package com.colisa.notekeeper;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,11 +39,14 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private LinearLayoutManager mNotesLayoutManager;
     private CourseRecyclerAdapter mCourseRecyclerAdapter;
     private GridLayoutManager mCoursesLayoutManager;
+    private NoteKeeperOpenHelper mDbOpenHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mDbOpenHelper = new NoteKeeperOpenHelper(this);
 
         // Setting toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         mRecyclerItems.setLayoutManager(mNotesLayoutManager);
         mRecyclerItems.setAdapter(mNoteRecyclerAdapter);
         selectNavigationItem(R.id.nav_notes);
+        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
     }
 
     private void selectNavigationItem(final int id) {
@@ -212,5 +217,12 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     private void handleSelection(int messageId) {
         View view = findViewById(R.id.list_items);
         Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mDbOpenHelper.close();
+        super.onDestroy();
+
     }
 }
