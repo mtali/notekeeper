@@ -1,25 +1,90 @@
 package com.colisa.notekeeper;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.colisa.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
+import com.colisa.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
+
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Jim.
- */
 
 public class DataManager {
     private static DataManager ourInstance = null;
+
+    private static final String[] courseColumns =
+            new String[]{CourseInfoEntry.COLUMN_COURSE_ID, CourseInfoEntry.COLUMN_COURSE_TITLE};
+
+    private static final String[] noteColumns =
+            new String[]{
+                    NoteInfoEntry.COLUMN_NOTE_TITLE,
+                    NoteInfoEntry.COLUMN_NOTE_TEXT,
+                    NoteInfoEntry.COLUMN_COURSE_ID};
 
     private List<CourseInfo> mCourses = new ArrayList<>();
     private List<NoteInfo> mNotes = new ArrayList<>();
 
     public static DataManager getInstance() {
-        if(ourInstance == null) {
+        if (ourInstance == null) {
             ourInstance = new DataManager();
-            ourInstance.initializeCourses();
-            ourInstance.initializeExampleNotes();
+//            ourInstance.initializeCourses();
+//            ourInstance.initializeExampleNotes();
         }
         return ourInstance;
+    }
+
+    public static void loadFromDatabase(NoteKeeperOpenHelper dbHelper) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        final Cursor courseCursor = db.query(CourseInfoEntry.TABLE_NAME,
+                courseColumns,
+                null,
+                null,
+                null,
+                null,
+                null);
+        loadCoursesFromDatabase(courseCursor);
+
+        final Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME,
+                noteColumns,
+                null,
+                null,
+                null,
+                null,
+                null);
+        loadNotesFromDatabase(noteCursor);
+    }
+
+    private static void loadNotesFromDatabase(Cursor cursor) {
+        int noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE);
+        int noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT);
+        int courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID);
+        DataManager dm = getInstance();
+        dm.mNotes.clear();
+        while (cursor.moveToNext()) {
+            String noteTitle = cursor.getString(noteTitlePos);
+            String noteText = cursor.getString(noteTextPos);
+            String courseId = cursor.getString(courseIdPos);
+
+            CourseInfo course = dm.getCourse(courseId);
+            NoteInfo note = new NoteInfo(course, noteTitle, noteText);
+            dm.mNotes.add(note);
+        }
+        cursor.close();
+    }
+
+    private static void loadCoursesFromDatabase(Cursor cursor) {
+        int courseIdPos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_ID);
+        int courseTitlePos = cursor.getColumnIndex(CourseInfoEntry.COLUMN_COURSE_TITLE);
+        DataManager dm = getInstance();
+        dm.mCourses.clear();
+        while (cursor.moveToNext()) {
+            String courseId = cursor.getString(courseIdPos);
+            String courseTitle = cursor.getString(courseTitlePos);
+            CourseInfo course = new CourseInfo(courseId, courseTitle, null);
+            dm.mCourses.add(course);
+        }
+        cursor.close();
     }
 
     public String getCurrentUserName() {
@@ -41,8 +106,8 @@ public class DataManager {
     }
 
     public int findNote(NoteInfo note) {
-        for(int index = 0; index < mNotes.size(); index++) {
-            if(note.equals(mNotes.get(index)))
+        for (int index = 0; index < mNotes.size(); index++) {
+            if (note.equals(mNotes.get(index)))
                 return index;
         }
 
@@ -67,8 +132,8 @@ public class DataManager {
 
     public List<NoteInfo> getNotes(CourseInfo course) {
         ArrayList<NoteInfo> notes = new ArrayList<>();
-        for(NoteInfo note:mNotes) {
-            if(course.equals(note.getCourse()))
+        for (NoteInfo note : mNotes) {
+            if (course.equals(note.getCourse()))
                 notes.add(note);
         }
         return notes;
@@ -76,8 +141,8 @@ public class DataManager {
 
     public int getNoteCount(CourseInfo course) {
         int count = 0;
-        for(NoteInfo note:mNotes) {
-            if(course.equals(note.getCourse()))
+        for (NoteInfo note : mNotes) {
+            if (course.equals(note.getCourse()))
                 count++;
         }
         return count;
