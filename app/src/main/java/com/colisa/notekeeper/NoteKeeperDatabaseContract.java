@@ -18,7 +18,7 @@ public class NoteKeeperDatabaseContract {
                         COLUMN_COURSE_TITLE + " TEXT NOT NULL)";
     }
 
-    public static final class NoteInfoEntry {
+    public static final class NoteInfoEntry implements BaseColumns{
         public static final String TABLE_NAME = "note_info";
         public static final String COLUMN_NOTE_TITLE = "note_title";
         public static final String COLUMN_NOTE_TEXT = "note_text";

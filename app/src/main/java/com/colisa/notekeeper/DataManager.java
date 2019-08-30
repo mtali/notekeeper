@@ -14,13 +14,17 @@ public class DataManager {
     private static DataManager ourInstance = null;
 
     private static final String[] courseColumns =
-            new String[]{CourseInfoEntry.COLUMN_COURSE_ID, CourseInfoEntry.COLUMN_COURSE_TITLE};
+            new String[]{
+                    CourseInfoEntry.COLUMN_COURSE_ID,
+                    CourseInfoEntry.COLUMN_COURSE_TITLE};
 
     private static final String[] noteColumns =
             new String[]{
                     NoteInfoEntry.COLUMN_NOTE_TITLE,
                     NoteInfoEntry.COLUMN_NOTE_TEXT,
-                    NoteInfoEntry.COLUMN_COURSE_ID};
+                    NoteInfoEntry.COLUMN_COURSE_ID,
+                    NoteInfoEntry._ID
+            };
 
     private List<CourseInfo> mCourses = new ArrayList<>();
     private List<NoteInfo> mNotes = new ArrayList<>();
@@ -60,15 +64,17 @@ public class DataManager {
         int noteTitlePos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TITLE);
         int noteTextPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_NOTE_TEXT);
         int courseIdPos = cursor.getColumnIndex(NoteInfoEntry.COLUMN_COURSE_ID);
+        int idPos = cursor.getColumnIndex(NoteInfoEntry._ID);
         DataManager dm = getInstance();
         dm.mNotes.clear();
         while (cursor.moveToNext()) {
             String noteTitle = cursor.getString(noteTitlePos);
             String noteText = cursor.getString(noteTextPos);
             String courseId = cursor.getString(courseIdPos);
+            int id = cursor.getInt(idPos);
 
             CourseInfo course = dm.getCourse(courseId);
-            NoteInfo note = new NoteInfo(course, noteTitle, noteText);
+            NoteInfo note = new NoteInfo(id, course, noteTitle, noteText);
             dm.mNotes.add(note);
         }
         cursor.close();
