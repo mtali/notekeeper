@@ -1,42 +1,45 @@
 package com.colisa.notekeeper;
 
+import android.app.LoaderManager;
+import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.content.SharedPreferencesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.ui.AppBarConfiguration;
+import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
-import static com.colisa.notekeeper.NoteKeeperDatabaseContract.*;
+import static com.colisa.notekeeper.NoteKeeperDatabaseContract.NoteInfoEntry;
 
-public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private AppBarConfiguration mAppBarConfiguration;
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_POSITION";
+    private static final int NOTES_LOADER = 3;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private RecyclerView mRecyclerItems;
     private LinearLayoutManager mNotesLayoutManager;
@@ -153,29 +156,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     @Override
     protected void onResume() {
         super.onResume();
-        loadNotes();
+        getLoaderManager().restartLoader(NOTES_LOADER, null, this);
         updateNavigationHeader();
     }
 
-    private void loadNotes() {
-        SQLiteDatabase db = mDbOpenHelper.getReadableDatabase();
-        final String[] noteColumns =
-                new String[]{
-                        NoteInfoEntry.COLUMN_NOTE_TITLE,
-                        NoteInfoEntry.COLUMN_COURSE_ID,
-                        NoteInfoEntry._ID
-                };
-        final String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
-        final Cursor noteCursor = db.query(NoteInfoEntry.TABLE_NAME,
-                noteColumns,
-                null,
-                null,
-                null,
-                null,
-                noteOrderBy
-        );
-        mNoteRecyclerAdapter.changeCursor(noteCursor);
-    }
 
     private void updateNavigationHeader() {
         NavigationView navigationView = findViewById(R.id.navigation_view);
@@ -236,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         Snackbar.make(view, "Share to - " + social, Snackbar.LENGTH_SHORT).show();
     }
 
-    private void handleSelection(int messageId) {
+    private void handleSelection(int id) {
         View view = findViewById(R.id.list_items);
-        Snackbar.make(view, messageId, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, id, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -246,5 +230,58 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         mDbOpenHelper.close();
         super.onDestroy();
 
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        CursorLoader loader = null;
+        if (id == NOTES_LOADER) {
+            loader = new CoursesCursorLoader(this, mDbOpenHelper);
+        }
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        int id = loader.getId();
+        if (id == NOTES_LOADER) {
+            mNoteRecyclerAdapter.changeCursor(data);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        int id = loader.getId();
+        if (id == NOTES_LOADER)
+            mNoteRecyclerAdapter.changeCursor(null);
+    }
+
+    private static class CoursesCursorLoader extends CursorLoader {
+        private final NoteKeeperOpenHelper mOpenHelper;
+
+        CoursesCursorLoader(@NonNull Context context, NoteKeeperOpenHelper openHelper) {
+            super(context);
+            this.mOpenHelper = openHelper;
+        }
+
+        @Override
+        public Cursor loadInBackground() {
+            SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+            final String[] noteColumns =
+                    new String[]{
+                            NoteInfoEntry.COLUMN_NOTE_TITLE,
+                            NoteInfoEntry.COLUMN_COURSE_ID,
+                            NoteInfoEntry._ID
+                    };
+            final String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+            return db.query(NoteInfoEntry.TABLE_NAME,
+                    noteColumns,
+                    null,
+                    null,
+                    null,
+                    null,
+                    noteOrderBy
+            );
+        }
     }
 }
