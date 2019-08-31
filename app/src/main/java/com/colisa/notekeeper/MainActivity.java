@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.colisa.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -270,11 +271,17 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
             final String[] noteColumns =
                     new String[]{
                             NoteInfoEntry.COLUMN_NOTE_TITLE,
-                            NoteInfoEntry.COLUMN_COURSE_ID,
-                            NoteInfoEntry._ID
+                            NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID),
+                            NoteInfoEntry.getQName(NoteInfoEntry._ID),
+                            CourseInfoEntry.COLUMN_COURSE_TITLE
                     };
-            final String noteOrderBy = NoteInfoEntry.COLUMN_COURSE_ID + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
-            return db.query(NoteInfoEntry.TABLE_NAME,
+            final String noteOrderBy = NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+            // note_info JOIN course_info IN note_info.course_id = course_info.course_id
+            String tableWithJoin = NoteInfoEntry.TABLE_NAME + " JOIN " + CourseInfoEntry.TABLE_NAME +
+                    " ON " + NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + " = " +
+                    CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID);
+
+            return db.query(tableWithJoin,
                     noteColumns,
                     null,
                     null,
