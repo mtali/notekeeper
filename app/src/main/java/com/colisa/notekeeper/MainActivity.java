@@ -275,8 +275,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                             NoteInfoEntry.getQName(NoteInfoEntry._ID),
                             CourseInfoEntry.COLUMN_COURSE_TITLE
                     };
-            final String noteOrderBy = NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
+//            final String noteOrderBy = NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
             // note_info JOIN course_info IN note_info.course_id = course_info.course_id
+            final String noteOrderBy = CourseInfoEntry.COLUMN_COURSE_TITLE + "," + NoteInfoEntry.COLUMN_NOTE_TITLE;
             String tableWithJoin = NoteInfoEntry.TABLE_NAME + " JOIN " + CourseInfoEntry.TABLE_NAME +
                     " ON " + NoteInfoEntry.getQName(NoteInfoEntry.COLUMN_COURSE_ID) + " = " +
                     CourseInfoEntry.getQName(CourseInfoEntry.COLUMN_COURSE_ID);
