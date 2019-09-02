@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -312,7 +313,13 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private CursorLoader createLoaderCourses() {
-        return new CourseCursorLoader(this, mDbHelper);
+        Uri uri = Uri.parse("content://com.colisa.notekeeper.provider");
+        String[] courseColumns = {
+                CourseInfoEntry.COLUMN_COURSE_TITLE,
+                CourseInfoEntry.COLUMN_COURSE_ID,
+                CourseInfoEntry._ID
+        };
+        return new CursorLoader(this, uri, courseColumns, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE);
     }
 
     private CursorLoader createLoaderNote() {
@@ -348,32 +355,6 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
             mNoteCursor.close();
         } else if (loader.getId() == LOAD_COURSES) {
             mAdapterCourses.changeCursor(null);
-        }
-    }
-
-    /**
-     * Loader to load course data from database to be populated on the spinner
-     * Return cursor object
-     */
-    private static class CourseCursorLoader extends CursorLoader {
-        private final NoteKeeperOpenHelper mDbHelper;
-
-        CourseCursorLoader(Context context, NoteKeeperOpenHelper dbHelper) {
-            super(context);
-            mDbHelper = dbHelper;
-        }
-
-        @Override
-        public Cursor loadInBackground() {
-            SQLiteDatabase db = mDbHelper.getReadableDatabase();
-            String[] courseColumns = {
-                    CourseInfoEntry.COLUMN_COURSE_TITLE,
-                    CourseInfoEntry.COLUMN_COURSE_ID,
-                    CourseInfoEntry._ID
-            };
-
-            return db.query(CourseInfoEntry.TABLE_NAME, courseColumns,
-                    null, null, null, null, CourseInfoEntry.COLUMN_COURSE_TITLE);
         }
     }
 

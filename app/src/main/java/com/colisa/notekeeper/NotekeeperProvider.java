@@ -3,9 +3,14 @@ package com.colisa.notekeeper;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
+import com.colisa.notekeeper.NoteKeeperDatabaseContract.CourseInfoEntry;
+
 public class NotekeeperProvider extends ContentProvider {
+    private NoteKeeperOpenHelper mOpenHelper;
+
     public NotekeeperProvider() {
     }
 
@@ -30,15 +35,17 @@ public class NotekeeperProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        // TODO: Implement this to initialize your content provider on startup.
-        return false;
+        mOpenHelper = new NoteKeeperOpenHelper(getContext());
+        return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        // TODO: Implement this to handle query requests from clients.
-        throw new UnsupportedOperationException("Not yet implemented");
+        Cursor cursor = null;
+        SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+        cursor = db.query(CourseInfoEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        return cursor;
     }
 
     @Override

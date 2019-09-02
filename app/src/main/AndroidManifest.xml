@@ -30,15 +30,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".NoteActivity"
             android:label="@string/title_activity_note"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <provider
             android:name=".NotekeeperProvider"
             android:authorities="com.colisa.notekeeper.provider"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
     </application>
 
 </manifest>
