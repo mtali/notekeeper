@@ -2,12 +2,15 @@ package com.colisa.notekeeper;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -86,7 +88,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         initializeDisplayContent();
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+
     }
+
+
 
     private void initializeDisplayContent() {
         DataManager.loadFromDatabase(mDbOpenHelper);
@@ -155,10 +160,10 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 }
             };
             task.execute();
-
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     public void onBackPressed() {
