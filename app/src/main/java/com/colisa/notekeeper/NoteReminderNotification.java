@@ -34,7 +34,7 @@ public class NoteReminderNotification {
 
 
 
-    public static void notify(final Context context, final String noteText) {
+    public static void notify(final Context context, final String noteText, final String noteTitle) {
 
         final Resources res = context.getResources();
         final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.example_picture);
@@ -50,6 +50,12 @@ public class NoteReminderNotification {
                 .setLargeIcon(picture)
 
                 .setTicker("Review note")
+
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(noteText)
+                        .setBigContentTitle(noteTitle)
+                        .setSummaryText("Review note"))
+
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 context,
