@@ -193,7 +193,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void showReminderNotification() {
-        NoteReminderNotification.notify(getApplicationContext(), "Hello emmanuel", 0);
+        String noteText = mTextNoteText.getText().toString();
+        NoteReminderNotification.notify(getApplicationContext(), noteText);
     }
 
     @Override

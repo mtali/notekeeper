@@ -34,30 +34,22 @@ public class NoteReminderNotification {
 
 
 
-    public static void notify(final Context context,
-                              final String noteTitle, final int number) {
+    public static void notify(final Context context, final String noteText) {
 
         final Resources res = context.getResources();
         final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.example_picture);
-        final String ticker = noteTitle;
-        final String title = res.getString(
-                R.string.note_reminder_notification_title_template, noteTitle);
-        final String text = res.getString(
-                R.string.note_reminder_notification_placeholder_text_template, noteTitle);
-
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
-                // Required fields
+
                 .setSmallIcon(R.drawable.ic_stat_note_reminder)
-                .setContentTitle(title)
-                .setContentText(text)
-                // Optional fields
+                .setContentTitle("Review note")
+                .setContentText(noteText)
+
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setLargeIcon(picture)
-                .setTicker(ticker)
-                .setNumber(number)
 
+                .setTicker("Review note")
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 context,
