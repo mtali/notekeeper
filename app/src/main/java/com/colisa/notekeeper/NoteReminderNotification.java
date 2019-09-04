@@ -34,10 +34,12 @@ public class NoteReminderNotification {
 
 
 
-    public static void notify(final Context context, final String noteText, final String noteTitle) {
+    public static void notify(final Context context, final String noteText, final String noteTitle, int noteId) {
 
         final Resources res = context.getResources();
-        final Bitmap picture = BitmapFactory.decodeResource(res, R.drawable.example_picture);
+
+        Intent noteActivityIntent = new Intent(context, NoteActivity.class);
+        noteActivityIntent.putExtra(NoteActivity.NOTE_ID, noteId);
 
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -47,7 +49,6 @@ public class NoteReminderNotification {
                 .setContentText(noteText)
 
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setLargeIcon(picture)
 
                 .setTicker("Review note")
 
@@ -60,7 +61,7 @@ public class NoteReminderNotification {
                         PendingIntent.getActivity(
                                 context,
                                 0,
-                                new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com")),
+                                noteActivityIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT))
 
                 .setAutoCancel(true);

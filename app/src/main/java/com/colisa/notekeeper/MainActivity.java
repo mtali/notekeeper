@@ -39,7 +39,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_POSITION";
+    public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_ID";
     private static final int NOTES_LOADER = 3;
     private NoteRecyclerAdapter mNoteRecyclerAdapter;
     private RecyclerView mRecyclerItems;

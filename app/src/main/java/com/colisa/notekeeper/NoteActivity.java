@@ -8,7 +8,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,15 +30,15 @@ import com.colisa.notekeeper.NoteKeeperProviderContract.Notes;
 public class NoteActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = NoteActivity.class.getSimpleName();
-    public static final int POSITION_NOT_SET = -1;
+    public static final int NOTE_ID_NOT_SET = -1;
     public static final String ORIGINAL_NOTE_COURSE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_COURSE_ID";
     public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
     public static final String ORIGINAL_NOTE_TEXT_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TEXT_ID";
-    public static final String NOTE_POSITION = "con.colisa.notekeeper.NOTE_POSITION";
+    public static final String NOTE_ID = "con.colisa.notekeeper.NOTE_ID";
     private static final int LOAD_NOTE = 0;
     private static final int LOAD_COURSES = 1;
 
-    private NoteInfo mNote = new NoteInfo(DataManager.getInstance().getCourses().get(0), "", "");
+//    private NoteInfo mNote = new NoteInfo(DataManager.getInstance().getCourses().get(0), "", "");
     private boolean mIsNewNote;
     private Spinner mSpinnerCourses;
     private EditText mTextNoteTitle;
@@ -107,10 +106,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void saveOriginalNoteValues() {
-        if (mIsNewNote) return;
-        mOriginalCourseId = mNote.getCourse().getCourseId();
-        mOriginalNoteTitle = mNote.getTitle();
-        mOriginalNoteText = mNote.getText();
+//        if (mIsNewNote) return;
+//        mOriginalCourseId = mNote.getCourse().getCourseId();
+//        mOriginalNoteTitle = mNote.getTitle();
+//        mOriginalNoteText = mNote.getText();
     }
 
 
@@ -145,8 +144,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void readDisplayStateValues() {
         Intent intent = getIntent();
-        mNoteId = intent.getIntExtra(NoteActivity.NOTE_POSITION, POSITION_NOT_SET);
-        mIsNewNote = (mNoteId == POSITION_NOT_SET);
+        mNoteId = intent.getIntExtra(NoteActivity.NOTE_ID, NOTE_ID_NOT_SET);
+        mIsNewNote = (mNoteId == NOTE_ID_NOT_SET);
         if (mIsNewNote) {
             createNewNote();
         }
@@ -195,7 +194,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private void showReminderNotification() {
         String noteText = mTextNoteText.getText().toString();
         String noteTitle = mTextNoteTitle.getText().toString();
-        NoteReminderNotification.notify(getApplicationContext(), noteText, noteTitle);
+        int rowId = (int)ContentUris.parseId(mNoteUri);
+        NoteReminderNotification.notify(getApplicationContext(), noteText, noteTitle, rowId);
     }
 
     @Override
@@ -209,7 +209,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private void moveNext() {
         saveNote();
         ++mNoteId;
-        mNote = DataManager.getInstance().getNotes().get(mNoteId);
+//        mNote = DataManager.getInstance().getNotes().get(mNoteId);
         saveOriginalNoteValues();
         displayNote();
         invalidateOptionsMenu();
@@ -257,10 +257,10 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void storePreviousNoteValues() {
-        CourseInfo course = DataManager.getInstance().getCourse(mOriginalCourseId);
-        mNote.setCourse(course);
-        mNote.setTitle(mOriginalNoteTitle);
-        mNote.setText(mOriginalNoteText);
+//        CourseInfo course = DataManager.getInstance().getCourse(mOriginalCourseId);
+//        mNote.setCourse(course);
+//        mNote.setTitle(mOriginalNoteTitle);
+//        mNote.setText(mOriginalNoteText);
 
     }
 
