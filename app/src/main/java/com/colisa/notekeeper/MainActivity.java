@@ -2,13 +2,11 @@ package com.colisa.notekeeper;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -38,8 +36,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements DrawerLayout.DrawerListener, NavigationView.OnNavigationItemSelectedListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final int LOADER_DELETE_ALL_NOTES = 5;
-    private AppBarConfiguration mAppBarConfiguration;
     private static final String TAG = MainActivity.class.getSimpleName();
     public static final String NOTE_POSITION = "com.colisa.notekeeper.NOTE_POSITION";
     private static final int NOTES_LOADER = 3;
@@ -146,19 +142,19 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         } else if (id == R.id.action_delete_all) {
             // Delete all notes
 
-             AsyncTask task = new AsyncTask() {
+            AsyncTask task = new AsyncTask() {
                 @Override
                 protected Object doInBackground(Object[] objects) {
                     getContentResolver().delete(Notes.CONTENT_URI, null, null);
                     return null;
                 }
 
-                 @Override
-                 protected void onPostExecute(Object o) {
+                @Override
+                protected void onPostExecute(Object o) {
                     mNoteRecyclerAdapter.changeCursor(null);
-                 }
-             };
-             task.execute();
+                }
+            };
+            task.execute();
 
         }
         return super.onOptionsItemSelected(item);
