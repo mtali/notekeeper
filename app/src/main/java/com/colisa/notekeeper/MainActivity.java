@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -177,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     @Override
     protected void onResume() {
+        NoteReminderNotification.cancel(this);
         super.onResume();
         getLoaderManager().restartLoader(NOTES_LOADER, null, this);
         updateNavigationHeader();
