@@ -2,6 +2,7 @@ package com.colisa.notekeeper;
 
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -157,7 +158,14 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(Notes.COLUMN_COURSE_ID, "");
         values.put(Notes.COLUMN_NOTE_TITLE, "");
         values.put(Notes.COLUMN_NOTE_TEXT, "");
-        mNoteUri = getContentResolver().insert(Notes.CONTENT_URI, values);
+
+        CreateNoteTask task = new CreateNoteTask(getContentResolver(), new CreateNoteTask.OnNoteCreatedListener() {
+            @Override
+            public void onNoteCreated(Uri noteUri) {
+                mNoteUri = noteUri;
+            }
+        });
+        task.execute(values);
     }
 
 
@@ -372,6 +380,32 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
             mNoteCursor.close();
         } else if (loader.getId() == LOAD_COURSES) {
             mAdapterCourses.changeCursor(null);
+        }
+    }
+
+    private static class CreateNoteTask extends AsyncTask<ContentValues, Void, Uri> {
+        private ContentResolver mResolver;
+        private OnNoteCreatedListener mNoteCreatedListener;
+
+        CreateNoteTask(ContentResolver resolver, OnNoteCreatedListener listener) {
+            mResolver = resolver;
+            mNoteCreatedListener = listener;
+        }
+
+        @Override
+        protected Uri doInBackground(ContentValues... contentValues) {
+            ContentValues values = contentValues[0];
+            return mResolver.insert(Notes.CONTENT_URI, values);
+        }
+
+
+        @Override
+        protected void onPostExecute(Uri uri) {
+            mNoteCreatedListener.onNoteCreated(uri);
+        }
+
+        interface OnNoteCreatedListener {
+            void onNoteCreated(Uri noteUri);
         }
     }
 }
