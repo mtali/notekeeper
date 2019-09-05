@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        enableStrictMode();
+
         mDbOpenHelper = new NoteKeeperOpenHelper(this);
 
         // Setting toolbar
@@ -92,6 +95,15 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
 
     }
 
+    private void enableStrictMode() {
+        if(BuildConfig.DEBUG) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build();
+            StrictMode.setThreadPolicy(policy);
+        }
+    }
 
 
     private void initializeDisplayContent() {
