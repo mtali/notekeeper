@@ -15,6 +15,7 @@ public class NoteBackupService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+            NoteReminderNotification.cancel(this);
             String backupCourseId = intent.getStringExtra(EXTRA_COURSE_ID);
             NoteBackup.doBackup(this, backupCourseId);
         }
