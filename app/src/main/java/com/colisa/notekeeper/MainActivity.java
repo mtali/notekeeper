@@ -182,7 +182,9 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     }
 
     private void backupNotes() {
-        NoteBackup.doBackup(this, NoteBackup.ALL_COURSES);
+        Intent intent = new Intent(this, NoteBackupService.class);
+        intent.putExtra(NoteBackupService.EXTRA_COURSE_ID, NoteBackup.ALL_COURSES);
+        startService(intent);
     }
 
 
