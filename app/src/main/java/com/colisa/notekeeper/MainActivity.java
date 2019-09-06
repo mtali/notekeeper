@@ -175,8 +175,14 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
                 }
             };
             task.execute();
+        } else if (id == R.id.action_backup_notes) {
+            backupNotes();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void backupNotes() {
+        NoteBackup.doBackup(this, NoteBackup.ALL_COURSES);
     }
 
 

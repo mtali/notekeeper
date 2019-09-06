@@ -71,5 +71,6 @@
     </string>
     <string name="channel_name" translatable="false">NoteReminder</string>
     <string name="channel_description">Note keeper reminder notification</string>
+    <string name="action_backup_string">Backup notes</string>
 
 </resources>
