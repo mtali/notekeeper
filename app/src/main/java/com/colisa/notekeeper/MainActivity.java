@@ -13,7 +13,9 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -194,8 +196,19 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
         super.onResume();
         getLoaderManager().restartLoader(NOTES_LOADER, null, this);
         updateNavigationHeader();
+        openDrawer();
     }
 
+    private void openDrawer() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        }, 1000);
+    }
 
     private void updateNavigationHeader() {
         NavigationView navigationView = findViewById(R.id.navigation_view);
