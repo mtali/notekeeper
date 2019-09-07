@@ -7,6 +7,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -58,6 +59,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private Uri mNoteUri;
     private boolean mNoteQueryFinished;
     private boolean mCourseQueryFinished;
+    private CourseEventsReceiver mCourseEventsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_note);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        registerCourseEventReceiver();
 
         mDbHelper = new NoteKeeperOpenHelper(this);
         mSpinnerCourses = findViewById(R.id.spinner_courses);
@@ -99,6 +103,12 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    private void registerCourseEventReceiver() {
+        mCourseEventsReceiver = new CourseEventsReceiver();
+        IntentFilter intentFilter = new IntentFilter(CourseEventBroadcastHelper.ACTION_COURSE_EVENT);
+        registerReceiver(mCourseEventsReceiver, intentFilter);
+    }
+
 
     private void restoreOriginalNoteValues(Bundle savedInstanceState) {
         mOriginalCourseId = savedInstanceState.getString(ORIGINAL_NOTE_COURSE_ID);
@@ -123,6 +133,8 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         mSpinnerCourses.setSelection(courseIndex);
         mTextNoteTitle.setText(noteTitle);
         mTextNoteText.setText(noteText);
+
+        CourseEventBroadcastHelper.sendEventBroadcast(this, courseId, "Editing Note");
     }
 
     private int getIndexOfCourse(String courseId) {
@@ -310,6 +322,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onDestroy() {
         mDbHelper.close();
+        unregisterReceiver(mCourseEventsReceiver);
         super.onDestroy();
     }
 

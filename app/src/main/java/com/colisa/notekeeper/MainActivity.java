@@ -224,14 +224,14 @@ public class MainActivity extends AppCompatActivity implements DrawerLayout.Draw
     }
 
     private void openDrawer() {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-                drawerLayout.openDrawer(GravityCompat.START);
-            }
-        }, 1000);
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+//                drawerLayout.openDrawer(GravityCompat.START);
+//            }
+//        }, 1000);
     }
 
     private void updateNavigationHeader() {

@@ -34,7 +34,6 @@
             android:name=".NoteActivity"
             android:label="@string/title_activity_note"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <provider
             android:name=".NotekeeperProvider"
             android:authorities="com.colisa.notekeeper.provider"
@@ -42,12 +41,16 @@
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
+        <receiver
+            android:name=".CourseEventsReceiver"
+            android:enabled="true"
+            android:exported="true"/>
+
         <service
             android:name=".NoteUploaderJobService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
         <service
             android:name=".NoteBackupService"
             android:exported="false" />
