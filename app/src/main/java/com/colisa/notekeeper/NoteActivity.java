@@ -40,10 +40,11 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     public static final String ORIGINAL_NOTE_TITLE_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TITLE_ID";
     public static final String ORIGINAL_NOTE_TEXT_ID = "com.colisa.notekeeper.ORIGINAL_NOTE_TEXT_ID";
     public static final String NOTE_ID = "con.colisa.notekeeper.NOTE_ID";
+    private static final String CURRENT_NOTE_URI = "com.colisa.notekeeper.CURRENT_COURSE_ID";
     private static final int LOAD_NOTE = 0;
     private static final int LOAD_COURSES = 1;
 
-//    private NoteInfo mNote = new NoteInfo(DataManager.getInstance().getCourses().get(0), "", "");
+    //    private NoteInfo mNote = new NoteInfo(DataManager.getInstance().getCourses().get(0), "", "");
     private boolean mIsNewNote;
     private Spinner mSpinnerCourses;
     private EditText mTextNoteTitle;
@@ -90,13 +91,13 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
         getLoaderManager().initLoader(LOAD_COURSES, null, this);
 
-        readDisplayStateValues();
+
         if (null == savedInstanceState) {
             saveOriginalNoteValues();
         } else {
             restoreOriginalNoteValues(savedInstanceState);
         }
-
+        readDisplayStateValues();
 
         mTextNoteTitle = findViewById(R.id.text_note_title);
         mTextNoteText = findViewById(R.id.text_note_text);
@@ -114,6 +115,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
     private void restoreOriginalNoteValues(Bundle savedInstanceState) {
+        mNoteUri = Uri.parse(savedInstanceState.getString(CURRENT_NOTE_URI));
         mOriginalCourseId = savedInstanceState.getString(ORIGINAL_NOTE_COURSE_ID);
         mOriginalNoteTitle = savedInstanceState.getString(ORIGINAL_NOTE_TITLE_ID);
         mOriginalNoteText = savedInstanceState.getString(ORIGINAL_NOTE_TEXT_ID);
@@ -217,7 +219,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private void showReminderNotification() {
         String noteText = mTextNoteText.getText().toString();
         String noteTitle = mTextNoteTitle.getText().toString();
-        int rowId = (int)ContentUris.parseId(mNoteUri);
+        int rowId = (int) ContentUris.parseId(mNoteUri);
 
         Intent intent = new Intent(this, NoteReminderReceiver.class);
         intent.putExtra(NoteReminderReceiver.EXTRA_NOTE_ID, rowId);
@@ -315,6 +317,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         return cursor.getString(courseIdPos);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void saveNoteToDatabase(String courseId, String noteTitle, String noteText) {
         // Update note inside the database
         // mNoteUri has row url for the current selected note
@@ -323,13 +326,23 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         values.put(NoteInfoEntry.COLUMN_NOTE_TITLE, noteTitle);
         values.put(NoteInfoEntry.COLUMN_NOTE_TEXT, noteText);
 
-        getContentResolver().update(mNoteUri, values, null, null);
+        final ContentResolver resolver = getContentResolver();
+        AsyncTask<ContentValues, Void, Void> task = new AsyncTask<ContentValues, Void, Void>() {
+            @Override
+            protected Void doInBackground(ContentValues... contentValues) {
+                assert mNoteUri != null;
+                resolver.update(mNoteUri, contentValues[0], null, null);
+                return null;
+            }
+        };
+        task.execute(values);
     }
 
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_NOTE_URI, mNoteUri.toString());
         outState.putString(ORIGINAL_NOTE_COURSE_ID, mOriginalCourseId);
         outState.putString(ORIGINAL_NOTE_TEXT_ID, mOriginalNoteText);
         outState.putString(ORIGINAL_NOTE_TITLE_ID, mOriginalNoteTitle);
