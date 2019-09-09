@@ -6,8 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +13,12 @@ import android.view.View;
 public class ModuleStatusView extends View {
 
     private static final String TAG = ModuleStatusView.class.getSimpleName();
-    public static final int EDIT_MODE_MODULE_CONTENT = 7;
+    public static final int EDIT_MODE_MODULE_COUNT = 7;
     private boolean[] mModuleStatus;
     private float mOutlineWidth;
     private float mShapeSize;
     private float mSpacing;
-    private Rect[] mModuleRectangle;
+    private Rect[] mModuleRectangles;
     private int mOutlineColor;
     private Paint mPaintOutline;
     private int mFillColor;
@@ -50,22 +48,22 @@ public class ModuleStatusView extends View {
      */
     private void init(AttributeSet attrs, int defStyle) {
 
-        if (isInEditMode() || true) {
+        if(isInEditMode())
             setupEditModeValues();
-        }
 
+        // Load attributes
         final TypedArray a = getContext().obtainStyledAttributes(
-                attrs, R.styleable.ModuleStatusView, defStyle, 0
-        );
+                attrs, R.styleable.ModuleStatusView, defStyle, 0);
+
         a.recycle();
 
         mOutlineWidth = 6f;
-        mShapeSize = 144f;
+        mShapeSize = 100f;
         mSpacing = 30f;
-        mRadius = (mShapeSize + mOutlineWidth) / 2;
+        mRadius = (mShapeSize - mOutlineWidth) / 2;
+
 
         mOutlineColor = Color.BLACK;
-
         mPaintOutline = new Paint(Paint.ANTI_ALIAS_FLAG);
         mPaintOutline.setStyle(Paint.Style.STROKE);
         mPaintOutline.setStrokeWidth(mOutlineWidth);
@@ -79,28 +77,25 @@ public class ModuleStatusView extends View {
     }
 
     private void setupEditModeValues() {
-        boolean[] exampleModuleValues = new boolean[EDIT_MODE_MODULE_CONTENT];
-        int middle = EDIT_MODE_MODULE_CONTENT / 2;
-        for (int i = 0; i < middle; i++) {
+        boolean[] exampleModuleValues = new boolean[EDIT_MODE_MODULE_COUNT];
+        int middle = EDIT_MODE_MODULE_COUNT / 2;
+        for(int i=0; i < middle; i++)
             exampleModuleValues[i] = true;
-        }
-        setModuleStatus(exampleModuleValues);
 
+        setModuleStatus(exampleModuleValues);
     }
 
-    private void setupModuleRectangles(int w, int h) {
-
-        int availableWidth = w - getPaddingLeft() - getPaddingRight();
-        int horizontalModulesThatCanFit = (int) (availableWidth / (mShapeSize + mSpacing));
+    private void setupModuleRectangles(int width) {
+        int availableWidth = width - getPaddingLeft() - getPaddingRight();
+        int horizontalModulesThatCanFit = (int)(availableWidth / (mShapeSize + mSpacing));
         int maxHorizontalModules = Math.min(horizontalModulesThatCanFit, mModuleStatus.length);
-
-        mModuleRectangle = new Rect[mModuleStatus.length];
-        for(int moduleIndex = 0; moduleIndex < mModuleRectangle.length; moduleIndex++) {
+        mModuleRectangles = new Rect[mModuleStatus.length];
+        for(int moduleIndex=0; moduleIndex < mModuleRectangles.length; moduleIndex++) {
             int column = moduleIndex % maxHorizontalModules;
             int row = moduleIndex / maxHorizontalModules;
-            int x = getPaddingLeft() + (int) (column * (mSpacing + mShapeSize));
+            int x = getPaddingLeft() + (int) (column * (mShapeSize + mSpacing));
             int y = getPaddingTop() + (int) (row * (mShapeSize + mSpacing));
-            mModuleRectangle[moduleIndex] = new Rect(x, y, x + (int) mShapeSize, y + (int) mShapeSize);
+            mModuleRectangles[moduleIndex] = new Rect(x, y, x + (int) mShapeSize, y + (int) mShapeSize);
         }
     }
 
@@ -109,9 +104,9 @@ public class ModuleStatusView extends View {
         Log.d(TAG, "Inside onDraw()");
         super.onDraw(canvas);
 
-        for(int moduleIndex = 0; moduleIndex < mModuleRectangle.length; moduleIndex++) {
-            float x = mModuleRectangle[moduleIndex].centerX();
-            float y = mModuleRectangle[moduleIndex].centerY();
+        for(int moduleIndex = 0; moduleIndex < mModuleRectangles.length; moduleIndex++) {
+            float x = mModuleRectangles[moduleIndex].centerX();
+            float y = mModuleRectangles[moduleIndex].centerY();
             if(mModuleStatus[moduleIndex]) {
                 canvas.drawCircle(x, y, mRadius, mPaintFill);
             }
@@ -121,35 +116,31 @@ public class ModuleStatusView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d(TAG, "Inside onMeasure()");
-        int desiredWidth;
-        int desiredHeight;
+        int desiredWidth = 0;
+        int desiredHeight = 0;
 
         int specWidth = MeasureSpec.getSize(widthMeasureSpec);
         int availableWidth = specWidth - getPaddingLeft() - getPaddingRight();
-
         int horizontalModulesThatCanFit = (int)(availableWidth / (mShapeSize + mSpacing));
         mMaxHorizontalModules = Math.min(horizontalModulesThatCanFit, mModuleStatus.length);
-        desiredWidth = (int)((mMaxHorizontalModules * (mShapeSize + mSpacing)) - mSpacing) ;
+
+        desiredWidth = (int)((mMaxHorizontalModules * (mShapeSize + mSpacing)) - mSpacing);
         desiredWidth += getPaddingLeft() + getPaddingRight();
 
         int rows = ((mModuleStatus.length - 1) / mMaxHorizontalModules) + 1;
-        desiredHeight = (int)((rows * (mShapeSize + mSpacing)) - mSpacing);
+        desiredHeight = (int) ((rows * (mShapeSize + mSpacing)) - mSpacing);
         desiredHeight += getPaddingTop() + getPaddingBottom();
 
         int width = resolveSizeAndState(desiredWidth, widthMeasureSpec, 0);
         int height = resolveSizeAndState(desiredHeight, heightMeasureSpec, 0);
 
-        Log.d(TAG, "Leaving onMeasure() with -> width: " + width + " height: " + height);
         setMeasuredDimension(width, height);
-
-
     }
 
     @Override
     protected void onSizeChanged(int w, int h, int oldWidth, int oldHeight) {
         Log.d(TAG, "Executing onSizeChanged() with -> width: " + w + " height: " + h);
-        setupModuleRectangles(w, h);
+        setupModuleRectangles(w);
     }
 
     public void setModuleStatus(boolean[] moduleStatus) {

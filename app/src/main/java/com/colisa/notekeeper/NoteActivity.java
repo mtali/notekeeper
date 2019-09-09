@@ -64,6 +64,7 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
     private boolean mNoteQueryFinished;
     private boolean mCourseQueryFinished;
     private CourseEventsReceiver mCourseEventsReceiver;
+    private ModuleStatusView mViewModuleStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,21 @@ public class NoteActivity extends AppCompatActivity implements LoaderManager.Loa
         if (!mIsNewNote) {
             getLoaderManager().initLoader(LOAD_NOTE, null, this);
         }
+
+        mViewModuleStatus = findViewById(R.id.module_status_view);
+        loadModuleStatusValues();
+
+    }
+
+    private void loadModuleStatusValues() {
+        int totalNumberOfModules = 11;
+        int completedModules = 7;
+        boolean[] moduleStatus = new boolean[totalNumberOfModules];
+        for(int i = 0; i < completedModules; i++) {
+            moduleStatus[i] = true;
+        }
+
+        mViewModuleStatus.setModuleStatus(moduleStatus);
     }
 
     private void registerCourseEventReceiver() {
