@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -244,6 +246,15 @@ public class ModuleStatusView extends View {
         mModuleStatus = moduleStatus;
     }
 
+    private void onModuleSelected(int moduleIndex) {
+        if (moduleIndex == INVALID_INDEX)
+            return;
+        mModuleStatus[mModuleIndex] = ! mModuleStatus[mModuleIndex];
+        invalidate();
+        mAccessibilityHelper.invalidateVirtualView(moduleIndex);
+        mAccessibilityHelper.sendEventForVirtualView(moduleIndex, AccessibilityEvent.TYPE_VIEW_CLICKED);
+    }
+
     private class ModuleStatusAccessibilityHelper extends ExploreByTouchHelper {
 
         public ModuleStatusAccessibilityHelper(@NonNull View host) {
@@ -271,10 +282,17 @@ public class ModuleStatusView extends View {
             node.setFocusable(true);
             node.setBoundsInParent(mModuleRectangles[virtualViewId]);
             node.setContentDescription("Module " + virtualViewId);
+            node.setCheckable(true);
+            node.setChecked(mModuleStatus[virtualViewId]);
+            node.addAction(AccessibilityNodeInfo.ACTION_CLICK);
         }
 
         @Override
         protected boolean onPerformActionForVirtualView(int virtualViewId, int action, @Nullable Bundle arguments) {
+            if (action == AccessibilityNodeInfo.ACTION_CLICK) {
+                onModuleSelected(virtualViewId);
+                return true;
+            }
             return false;
         }
     }
