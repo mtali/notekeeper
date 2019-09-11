@@ -1,17 +1,26 @@
 package com.colisa.notekeeper;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
+
+import java.util.List;
 
 public class ModuleStatusView extends View {
 
@@ -33,6 +42,7 @@ public class ModuleStatusView extends View {
     private int mMaxHorizontalModules;
     private int mModuleIndex;
     private int mShape;
+    private ModuleStatusAccessibilityHelper mAccessibilityHelper;
 
     public ModuleStatusView(Context context) {
         super(context);
@@ -59,6 +69,10 @@ public class ModuleStatusView extends View {
 
         if (isInEditMode())
             setupEditModeValues();
+
+        setFocusable(true);
+        mAccessibilityHelper = new ModuleStatusAccessibilityHelper(this);
+        ViewCompat.setAccessibilityDelegate(this, mAccessibilityHelper);
 
         DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
         float displayDensity = dm.density;
@@ -90,6 +104,22 @@ public class ModuleStatusView extends View {
         mPaintFill.setStyle(Paint.Style.FILL);
         mPaintFill.setColor(mFillColor);
 
+    }
+
+    @Override
+    protected boolean dispatchHoverEvent(MotionEvent event) {
+        return mAccessibilityHelper.dispatchHoverEvent(event) || super.dispatchHoverEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return mAccessibilityHelper.dispatchKeyEvent(event) || super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    protected void onFocusChanged(boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
+        super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
+        mAccessibilityHelper.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
     }
 
     private void setupEditModeValues() {
@@ -212,5 +242,40 @@ public class ModuleStatusView extends View {
 
     public void setModuleStatus(boolean[] moduleStatus) {
         mModuleStatus = moduleStatus;
+    }
+
+    private class ModuleStatusAccessibilityHelper extends ExploreByTouchHelper {
+
+        public ModuleStatusAccessibilityHelper(@NonNull View host) {
+            super(host);
+        }
+
+        @Override
+        protected int getVirtualViewAt(float x, float y) {
+            int moduleIndex = findItemAtPosition(x, y);
+            return moduleIndex == INVALID_INDEX ? ExploreByTouchHelper.INVALID_ID : moduleIndex;
+
+        }
+
+        @Override
+        protected void getVisibleVirtualViews(List<Integer> virtualViewIds) {
+            if (mModuleRectangles == null)
+                return;
+            for(int moduleIndex = 0; moduleIndex < mModuleRectangles.length; moduleIndex++) {
+                virtualViewIds.add(moduleIndex);
+            }
+        }
+
+        @Override
+        protected void onPopulateNodeForVirtualView(int virtualViewId, @NonNull AccessibilityNodeInfoCompat node) {
+            node.setFocusable(true);
+            node.setBoundsInParent(mModuleRectangles[virtualViewId]);
+            node.setContentDescription("Module " + virtualViewId);
+        }
+
+        @Override
+        protected boolean onPerformActionForVirtualView(int virtualViewId, int action, @Nullable Bundle arguments) {
+            return false;
+        }
     }
 }
